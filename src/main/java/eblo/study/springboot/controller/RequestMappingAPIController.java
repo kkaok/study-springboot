@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @RestController
 @RequestMapping("/controller/mapping")
 public class RequestMappingAPIController {
@@ -18,6 +21,7 @@ public class RequestMappingAPIController {
      */
     @RequestMapping("/requestMapping")
     public ResponseEntity<String> requestMapping() {
+        log.debug("requestMapping call");
         return ResponseEntity.ok("requestMapping");
     }
     
@@ -27,6 +31,7 @@ public class RequestMappingAPIController {
      */
     @GetMapping
     public ResponseEntity<String> getMapping() {
+        log.debug("getMapping call");
         return ResponseEntity.ok("getMapping");
     }
     
@@ -36,6 +41,7 @@ public class RequestMappingAPIController {
      */
     @PostMapping
     public ResponseEntity<String> postMapping() {
+        log.debug("postMapping call");
         return ResponseEntity.ok("postMapping");
     }
 
@@ -45,6 +51,7 @@ public class RequestMappingAPIController {
      */
     @PutMapping
     public ResponseEntity<String> putMapping() {
+        log.debug("putMapping call");
         return ResponseEntity.ok("putMapping");
     }
 
@@ -54,6 +61,7 @@ public class RequestMappingAPIController {
      */
     @DeleteMapping
     public ResponseEntity<String> deleteMapping() {
+        log.debug("deleteMapping call");
         return ResponseEntity.ok("deleteMapping");
     }
 
@@ -63,6 +71,7 @@ public class RequestMappingAPIController {
      */
     @GetMapping("/test1")
     public ResponseEntity<String> getMappingTest() {
+        log.debug("getMappingTest call");
         return ResponseEntity.ok("getMapping-test1");
     }
     
@@ -72,6 +81,7 @@ public class RequestMappingAPIController {
      */
     @GetMapping({"/test2","/test-mapping"})
     public ResponseEntity<String> getMappingTest2() {
+        log.debug("getMappingTest2 call");
         return ResponseEntity.ok("getMapping-test2");
     }
 
