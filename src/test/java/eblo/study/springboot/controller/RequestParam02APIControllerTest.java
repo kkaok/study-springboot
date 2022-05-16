@@ -97,7 +97,7 @@ class RequestParam02APIControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value(params.getName()))
+                .andExpect(jsonPath("$.name").value(params.getName().trim()))
                 .andExpect(jsonPath("$.id").value(params.getId()));
     }
     

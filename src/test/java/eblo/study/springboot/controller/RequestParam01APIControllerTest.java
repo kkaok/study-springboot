@@ -198,8 +198,9 @@ class RequestParam01APIControllerTest {
     void objectMapping() throws Exception {
         String created = "2022-05-12";
         Date createdDt = new SimpleDateFormat("yyyy-MM-dd").parse(created); 
-        RequestParams01 params = RequestParams01.builder().id("test").name("테스트").created(createdDt).build();
-        mockMvc.perform(MockMvcRequestBuilders.post("/controller/request/params")
+//        RequestParams01 params = RequestParams01.builder().id("test").name("테스트").created(createdDt).build();
+        RequestParams01 params = new RequestParams01("test", "테스트", true, createdDt);
+        mockMvc.perform(MockMvcRequestBuilders.post("/controller/request/params").accept(MediaType.APPLICATION_JSON)
                 .param("id", params.getId())
                 .param("name", params.getName())
                 .param("created", created)
@@ -219,7 +220,8 @@ class RequestParam01APIControllerTest {
     void bodyMapping() throws Exception {
         String created = "2022-05-12";
         Date createdDt = new SimpleDateFormat("yyyy-MM-dd").parse(created); 
-        RequestParams01 params = RequestParams01.builder().id("test").name("테스트").created(createdDt).build();
+        //RequestParams01 params = RequestParams01.builder().id("test").name("테스트").created(createdDt).build();
+        RequestParams01 params = new RequestParams01("test", "테스트", true, createdDt);
         
         ObjectMapper objectMapper = new ObjectMapper();
         String body = objectMapper.writeValueAsString(params);
@@ -242,7 +244,8 @@ class RequestParam01APIControllerTest {
         String paramId = "paramId";
         String created = "2022-05-12";
         Date createdDt = new SimpleDateFormat("yyyy-MM-dd").parse(created); 
-        RequestParams01 params = RequestParams01.builder().id("test").name("테스트").created(createdDt).build();
+//        RequestParams01 params = RequestParams01.builder().id("test").name("테스트").created(createdDt).build();
+        RequestParams01 params = new RequestParams01("test", "테스트", true, createdDt);
         mockMvc.perform(MockMvcRequestBuilders.post("/controller/request/params/"+params.getId())
                 .param("id", paramId)
                 .param("name", params.getName())
@@ -262,8 +265,9 @@ class RequestParam01APIControllerTest {
     void bodyMappingWithId() throws Exception {
         String created = "2022-05-12";
         Date createdDt = new SimpleDateFormat("yyyy-MM-dd").parse(created); 
-        RequestParams01 params = RequestParams01.builder().id("testId").name("테스트").created(createdDt).build();
-        
+        //RequestParams01 params = RequestParams01.builder().id("testId").name("테스트").created(createdDt).build();
+        RequestParams01 params = new RequestParams01("test", "테스트", true, createdDt);
+
         ObjectMapper objectMapper = new ObjectMapper();
         String body = objectMapper.writeValueAsString(params);
         

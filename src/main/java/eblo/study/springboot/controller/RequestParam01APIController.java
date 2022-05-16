@@ -5,23 +5,16 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.NumberFormat;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -142,7 +135,6 @@ public class RequestParam01APIController {
     @Getter
     @Setter
     @ToString
-    @Builder
     public static class RequestParams01 {
         
         private String id;
@@ -155,6 +147,18 @@ public class RequestParam01APIController {
         public void setCreated(Long timestamp) {
             if(timestamp == null) return;
             this.created = new Date(timestamp); 
+        }
+
+        public RequestParams01() {
+            super();
+        }
+
+        public RequestParams01(String id, String name, boolean test, Date created) {
+            super();
+            this.id = id;
+            this.name = name;
+            this.test = test;
+            this.created = created;
         }
     }
 

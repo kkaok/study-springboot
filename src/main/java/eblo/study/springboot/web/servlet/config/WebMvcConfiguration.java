@@ -5,6 +5,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.number.NumberStyleFormatter;
+import org.springframework.http.MediaType;
+import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
@@ -42,6 +44,13 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
         numberFormatter.setPattern("#,###,###,###.##");
         registry.addFormatter(numberFormatter);
         
+    }
+
+    @Override
+    public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
+        configurer.favorParameter(false)
+        .ignoreAcceptHeader(true)
+        .defaultContentType(MediaType.APPLICATION_JSON);
     }
 
 }

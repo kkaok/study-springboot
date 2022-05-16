@@ -45,6 +45,7 @@ class RequestParam03APIControllerTest {
         Double resultValue = 12000.12d;
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/controller/request/config/double")
                 .param("param", param)
+                .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON))
 //                .andDo(print())
                 .andExpect(status().isOk())
@@ -65,6 +66,7 @@ class RequestParam03APIControllerTest {
                 .param("created", created)
                 .param("dbl", "12,000.12")
                 .param("lng", "12,000.12")
+                .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
