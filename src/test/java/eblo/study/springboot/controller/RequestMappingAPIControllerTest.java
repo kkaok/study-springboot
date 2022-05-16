@@ -18,6 +18,10 @@ class RequestMappingAPIControllerTest {
     @Autowired 
     private MockMvc mockMvc;
     
+    /**
+     * @RequestMapping 테스트, get/post/put/delete로 요청을 해본다. 
+     * @throws Exception
+     */
     @Test
     void requestMapping() throws Exception {
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/controller/mapping/requestMapping")
@@ -29,6 +33,10 @@ class RequestMappingAPIControllerTest {
         Assertions.assertEquals(content, "requestMapping");
     }
     
+    /**
+     * @GetMapping 테스트 
+     * @throws Exception
+     */
     @Test
     void getMapping() throws Exception {
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/controller/mapping")
@@ -40,6 +48,10 @@ class RequestMappingAPIControllerTest {
         Assertions.assertEquals(content, "getMapping");
     }
     
+    /**
+     * @PostMapping 테스트 
+     * @throws Exception
+     */
     @Test
     void postMapping() throws Exception {
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/controller/mapping")
@@ -51,6 +63,10 @@ class RequestMappingAPIControllerTest {
         Assertions.assertEquals(content, "postMapping");
     }
     
+    /**
+     * @PutMapping 테스트 
+     * @throws Exception
+     */
     @Test
     void putMapping() throws Exception {
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.put("/controller/mapping")
@@ -62,6 +78,10 @@ class RequestMappingAPIControllerTest {
         Assertions.assertEquals(content, "putMapping");
     }
     
+    /**
+     * @DeleteMapping test
+     * @throws Exception
+     */
     @Test
     void deleteMapping() throws Exception {
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.delete("/controller/mapping")
@@ -84,6 +104,10 @@ class RequestMappingAPIControllerTest {
         Assertions.assertEquals(content, "getMapping-test1");
     }
     
+    /**
+     * 하나의 메소드에 여러 주소를 매핑하고 테스트 
+     * @throws Exception
+     */
     @Test
     void getMappingTest2() throws Exception {
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/controller/mapping/test2")
@@ -95,9 +119,13 @@ class RequestMappingAPIControllerTest {
         Assertions.assertEquals(content, "getMapping-test2");
     }
     
+    /**
+     * 하나의 메소드에 여러 주소를 매핑하고 테스트 
+     * @throws Exception
+     */
     @Test
     void testMapping() throws Exception {
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/controller/mapping//test-mapping")
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/controller/mapping/test-mapping")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())

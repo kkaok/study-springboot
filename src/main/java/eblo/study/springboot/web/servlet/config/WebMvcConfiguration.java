@@ -1,6 +1,10 @@
 package eblo.study.springboot.web.servlet.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.format.FormatterRegistry;
+import org.springframework.format.number.NumberStyleFormatter;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
@@ -22,6 +26,22 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/whoami").setViewName("whoami");
+    }
+
+    @Autowired(required = false)
+    private Converter<?, ?>[] converters;
+    
+    @Override
+    public void addFormatters(FormatterRegistry registry) {
+        if(converters != null) {
+            for(final Converter<?, ?> converter : converters) {
+                registry.addConverter(converter);
+            }
+        }
+        NumberStyleFormatter numberFormatter = new NumberStyleFormatter();
+        numberFormatter.setPattern("#,###,###,###.##");
+        registry.addFormatter(numberFormatter);
+        
     }
 
 }
