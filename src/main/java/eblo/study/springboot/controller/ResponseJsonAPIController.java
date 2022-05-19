@@ -63,7 +63,7 @@ public class ResponseJsonAPIController {
         private Boolean test;
         
         private String emptyField;
-        
+
         /**
          * yyyy-MM-dd 포맷으로 전달 된 값을 직렬화한다. 
          */

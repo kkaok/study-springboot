@@ -1,193 +1,76 @@
 package eblo.study.springboot.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import eblo.study.springboot.controller.RequestParam01APIController.RequestParams01;
+import eblo.study.springboot.web.servlet.support.DateUtil;
 
 @WebMvcTest(controllers = RequestParam01APIController.class)
 class RequestParam01APIControllerTest {
 
     @Autowired 
     private MockMvc mockMvc;
-    
-    /**
-     * @RequestParam(required = false) 테스트, 값 없는 경우  
-     * @throws Exception
-     */
-    @Test
-    void requiredfalse() throws Exception {
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/controller/request/requiredfalse")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andReturn();
-        String content = result.getResponse().getContentAsString();
-        Assertions.assertEquals(content, "");
+
+    private RequestParams01 getRequestParams01() {
+        return new RequestParams01("test", "테스트", true, DateUtil.parseDate("2022-05-12"));
     }
 
     /**
-     * @RequestParam(required = false) 테스트, 값 있는 경우  
+     * @RequestParam 테스트  
      * @throws Exception
      */
-    @Test
-    void requiredfalseWithId() throws Exception {
-        String id = "test";
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/controller/request/requiredfalse")
-                .param("id", id)
-                .contentType(MediaType.APPLICATION_JSON))
+    @ParameterizedTest
+    @CsvSource({
+        "/controller/request/requiredfalse,,", "/controller/request/requiredfalse,test,test"
+        ,"/controller/request/optional,,", "/controller/request/optional,test,test"
+        ,"/controller/request/default,,none", "/controller/request/default,test,test"
+        })
+    void requiredfalse(String uri, String id, String expected) throws Exception {
+        MockHttpServletRequestBuilder mrbuilder = MockMvcRequestBuilders.get(uri).contentType(MediaType.APPLICATION_JSON);
+        if(id != null) mrbuilder.param("id", id);
+        if(expected == null) expected = "";
+        MvcResult result = mockMvc.perform(mrbuilder)
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
-        String content = result.getResponse().getContentAsString();
-        Assertions.assertEquals(content, id);
-    }
-    
-    /**
-     * @RequestParam Optional<String> id 테스트, 값 없는 경우 
-     * @throws Exception
-     */
-    @Test
-    void optional() throws Exception {
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/controller/request/optional")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andReturn();
-        String content = result.getResponse().getContentAsString();
-        Assertions.assertEquals(content, "none");
-    }
-    
-    /**
-     * @RequestParam Optional<String> id 테스트, 값 있는 경우 
-     * @throws Exception
-     */
-    @Test
-    void optionalWithId() throws Exception {
-        String id = "test";
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/controller/request/optional")
-                .param("id", id)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andReturn();
-        String content = result.getResponse().getContentAsString();
-        Assertions.assertEquals(content, id);
-    }
-    
-    /**
-     * @RequestParam(defaultValue = "none") 테스트, 값 없는 경우 
-     * @throws Exception
-     */
-    @Test
-    void defaultValue() throws Exception {
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/controller/request/default")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andReturn();
-        String content = result.getResponse().getContentAsString();
-        Assertions.assertEquals(content, "none");
-    }
-    
-    /**
-     * @RequestParam(defaultValue = "none") 테스트, 값 있는 경우 
-     * @throws Exception
-     */
-    @Test
-    void defaultValueWithId() throws Exception {
-        String id = "test";
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/controller/request/default")
-                .param("id", id)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andReturn();
-        String content = result.getResponse().getContentAsString();
-        Assertions.assertEquals(content, id);
+        assertThat(result.getResponse().getContentAsString()).isEqualTo(expected);
     }
 
     /**
-     * date type 테스트, 요청레벨에서 convert 한다.  
+     * 타입 매핑 테스트  
      * @throws Exception
      */
-    @Test
-    void dateMapping() throws Exception {
-        String param = "2022-05-12";
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/controller/request/date")
+    @ParameterizedTest
+    @CsvSource(value = {
+        "/controller/request/date#2022-05-12#2022-05-12"
+        ,"/controller/request/long#12,000.12#12000"
+        ,"/controller/request/double#12,000.12#12000.12"
+        ,"/controller/request/boolean#on#true"
+        }, delimiterString="#")
+    void typeMapping(String uri, String param, String expected) throws Exception {
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post(uri)
                 .param("param", param)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
-        String content = result.getResponse().getContentAsString();
-        Assertions.assertEquals(content, "2022-05-12");
-    }
-
-    /**
-     * Long type 예제 
-     * @throws Exception
-     */
-    @Test
-    void longMapping() throws Exception {
-        String param = "12,000.12";
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/controller/request/long")
-                .param("param", param)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andReturn();
-        String content = result.getResponse().getContentAsString();
-        Assertions.assertEquals(content, "12000");
-    }
-
-    /**
-     * Double type 예제 
-     * @throws Exception
-     */
-    @Test
-    void doubleMapping() throws Exception {
-        String param = "12,000.12";
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/controller/request/double")
-                .param("param", param)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andReturn();
-        String content = result.getResponse().getContentAsString();
-        Assertions.assertEquals(content, "12000.12");
-    }
-    
-    /**
-     * Boolean 테스트 
-     * @throws Exception
-     */
-    @Test
-    void booleanMapping() throws Exception {
-        String param = "on";
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/controller/request/boolean")
-                .param("param", param)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andReturn();
-        String content = result.getResponse().getContentAsString();
-        Assertions.assertEquals(content, "true");
+        assertThat(result.getResponse().getContentAsString()).isEqualTo(expected);
     }
     
     /**
@@ -196,20 +79,14 @@ class RequestParam01APIControllerTest {
      */
     @Test
     void objectMapping() throws Exception {
-        String created = "2022-05-12";
-        Date createdDt = new SimpleDateFormat("yyyy-MM-dd").parse(created); 
-//        RequestParams01 params = RequestParams01.builder().id("test").name("테스트").created(createdDt).build();
-        RequestParams01 params = new RequestParams01("test", "테스트", true, createdDt);
-        mockMvc.perform(MockMvcRequestBuilders.post("/controller/request/params").accept(MediaType.APPLICATION_JSON)
+        RequestParams01 params = getRequestParams01();
+        MockHttpServletRequestBuilder mrbuilder = MockMvcRequestBuilders.post("/controller/request/params").accept(MediaType.APPLICATION_JSON)
                 .param("id", params.getId())
                 .param("name", params.getName())
-                .param("created", created)
-                .param("test", "yes")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value(params.getName()))
-                .andExpect(jsonPath("$.id").value(params.getId()));
+                .param("created", DateUtil.formatDate(params.getCreated()))
+                .param("test", (params.getTest())? "yes":"no")
+                .contentType(MediaType.APPLICATION_JSON);
+        execute(mrbuilder, params);
     }
     
     /**
@@ -218,18 +95,17 @@ class RequestParam01APIControllerTest {
      */
     @Test
     void bodyMapping() throws Exception {
-        String created = "2022-05-12";
-        Date createdDt = new SimpleDateFormat("yyyy-MM-dd").parse(created); 
-        //RequestParams01 params = RequestParams01.builder().id("test").name("테스트").created(createdDt).build();
-        RequestParams01 params = new RequestParams01("test", "테스트", true, createdDt);
-        
+        RequestParams01 params = getRequestParams01();
         ObjectMapper objectMapper = new ObjectMapper();
         String body = objectMapper.writeValueAsString(params);
-        
-        mockMvc.perform(MockMvcRequestBuilders.post("/controller/request/body")
+        MockHttpServletRequestBuilder mrbuilder = MockMvcRequestBuilders.post("/controller/request/body")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(body))
-                .andDo(print())
+                .content(body);
+        execute(mrbuilder, params);
+    }
+
+    private void execute(MockHttpServletRequestBuilder mrbuilder, RequestParams01 params) throws Exception {
+        mockMvc.perform(mrbuilder)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value(params.getName()))
                 .andExpect(jsonPath("$.id").value(params.getId()));
@@ -241,44 +117,14 @@ class RequestParam01APIControllerTest {
      */
     @Test
     void requestParamAndPath() throws Exception {
-        String paramId = "paramId";
-        String created = "2022-05-12";
-        Date createdDt = new SimpleDateFormat("yyyy-MM-dd").parse(created); 
-//        RequestParams01 params = RequestParams01.builder().id("test").name("테스트").created(createdDt).build();
-        RequestParams01 params = new RequestParams01("test", "테스트", true, createdDt);
-        mockMvc.perform(MockMvcRequestBuilders.post("/controller/request/params/"+params.getId())
-                .param("id", paramId)
+        RequestParams01 params = getRequestParams01();
+        MockHttpServletRequestBuilder mrbuilder = MockMvcRequestBuilders.post("/controller/request/params/pathId").accept(MediaType.APPLICATION_JSON)
+                .param("id", params.getId())
                 .param("name", params.getName())
-                .param("created", created)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value(params.getName()))
-                .andExpect(jsonPath("$.id").value(paramId));
+                .param("created", DateUtil.formatDate(params.getCreated()))
+                .param("test", (params.getTest())? "yes":"no")
+                .contentType(MediaType.APPLICATION_JSON);
+        execute(mrbuilder, params);
     }
-
-    /**
-     * @RequestBody 테스트    
-     * @throws Exception
-     */
-    @Test
-    void bodyMappingWithId() throws Exception {
-        String created = "2022-05-12";
-        Date createdDt = new SimpleDateFormat("yyyy-MM-dd").parse(created); 
-        //RequestParams01 params = RequestParams01.builder().id("testId").name("테스트").created(createdDt).build();
-        RequestParams01 params = new RequestParams01("test", "테스트", true, createdDt);
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        String body = objectMapper.writeValueAsString(params);
-        
-        mockMvc.perform(MockMvcRequestBuilders.post("/controller/request/body/pathId")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(body))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value(params.getName()))
-                .andExpect(jsonPath("$.id").value(params.getId()));
-    }
-
 
 }

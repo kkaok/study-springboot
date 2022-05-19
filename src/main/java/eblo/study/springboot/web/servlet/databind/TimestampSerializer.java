@@ -8,17 +8,16 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 
-import eblo.study.springboot.web.servlet.constant.DateFormatConstant;
+import eblo.study.springboot.web.servlet.support.DateUtil;
 
 public class TimestampSerializer extends JsonSerializer<Timestamp> {
 
     @Override
-    public void serialize(Timestamp date, JsonGenerator jsonGenerator, SerializerProvider serializerProvider)
+    public void serialize(Timestamp dateTime, JsonGenerator jsonGenerator, SerializerProvider serializerProvider)
             throws IOException {
         try {
-            jsonGenerator.writeString(DateFormatConstant.DATETIME_FORMAT.format(date));
+            jsonGenerator.writeString(DateUtil.getDateTimeFormat().format(dateTime));
         } catch (DateTimeParseException e) {
-            System.err.println(e);
             jsonGenerator.writeString("");
         }
     }

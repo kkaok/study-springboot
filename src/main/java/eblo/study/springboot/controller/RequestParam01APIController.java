@@ -42,7 +42,7 @@ public class RequestParam01APIController {
     @GetMapping("/optional")
     public ResponseEntity<String> requestParamOptional(@RequestParam final Optional<String> id) {
         log.debug("requestParamOptional call : "+id);
-        return ResponseEntity.ok(id.orElse("none"));
+        return ResponseEntity.ok(id.orElse(null));
     }
 
     /**
@@ -51,7 +51,8 @@ public class RequestParam01APIController {
      */
     @GetMapping("/default")
     public ResponseEntity<String> requestParamDefault(@RequestParam(defaultValue = "none") final String id) {
-        log.debug("requestParamDefault call : "+id);
+        
+        log.debug("requestParamDefault call : "+id+":"+(id==null));
         return ResponseEntity.ok(id);
     }
 
@@ -93,7 +94,7 @@ public class RequestParam01APIController {
      */
     @PostMapping("/params")
     public ResponseEntity<RequestParams01> requestParamObject(final RequestParams01 params) {
-        log.debug("requestParamDate call : "+params.toString());
+        log.debug("requestParamObject call : "+params.toString());
         return ResponseEntity.ok(params);
     }
     
@@ -128,7 +129,7 @@ public class RequestParam01APIController {
      */
     @PostMapping("/params/{id}")
     public ResponseEntity<RequestParams01> requestParamAndPath(final RequestParams01 params) {
-        log.debug("requestParamDate call : "+params.toString());
+        log.debug("requestParamAndPath call : "+params.toString());
         return ResponseEntity.ok(params);
     }
     

@@ -8,7 +8,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 
-import eblo.study.springboot.web.servlet.constant.DateFormatConstant;
+import eblo.study.springboot.web.servlet.support.DateUtil;
 
 public class DateSerializer extends JsonSerializer<Date> {
 
@@ -16,9 +16,8 @@ public class DateSerializer extends JsonSerializer<Date> {
     public void serialize(Date date, JsonGenerator jsonGenerator, SerializerProvider serializerProvider)
             throws IOException {
         try {
-            jsonGenerator.writeString(DateFormatConstant.DATE_FORMAT.format(date));
+            jsonGenerator.writeString(DateUtil.getDateFormat().format(date));
         } catch (DateTimeParseException e) {
-            System.err.println(e);
             jsonGenerator.writeString("");
         }
     }

@@ -7,13 +7,13 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 
-import eblo.study.springboot.web.servlet.constant.DateFormatConstant;
+import eblo.study.springboot.web.servlet.support.DateUtil;
 
 public class LocalDateTimeDeserializer extends JsonDeserializer<LocalDateTime> {
 
     @Override
     public LocalDateTime deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
-        return LocalDateTime.parse(jsonParser.getText(), DateFormatConstant.DATETIME_FORMATTER);
+        return LocalDateTime.parse(jsonParser.getText(), DateUtil.getDateTimeFormatter());
     }
 
 }

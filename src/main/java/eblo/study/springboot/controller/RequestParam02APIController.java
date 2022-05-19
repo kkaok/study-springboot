@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 
+import eblo.study.springboot.web.servlet.support.DateUtil;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -37,11 +38,11 @@ public class RequestParam02APIController {
     @InitBinder
     private void initBinder(WebDataBinder webDataBinder, WebRequest request) {
         // datetime format 설정 
-        SimpleDateFormat datetimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        DateFormat datetimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         datetimeFormat.setLenient(false);
         webDataBinder.registerCustomEditor(Timestamp.class, new CustomDateEditor(datetimeFormat, true));
         // date format 설정 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         dateFormat.setLenient(false);
         webDataBinder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
         // trim 설정 
@@ -58,9 +59,8 @@ public class RequestParam02APIController {
      */
     @PostMapping("/date")
     public ResponseEntity<String> dateMapping(@RequestParam final Date param) {
-        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");  
-        String strDate = dateFormat.format(param);  
-        log.debug("strDate : "+strDate);
+        String strDate = DateUtil.formatDate(param, "yyyy/MM/dd");
+        log(strDate);
         return ResponseEntity.ok(strDate);
     }
 
@@ -71,7 +71,7 @@ public class RequestParam02APIController {
      */
     @PostMapping("/double")
     public ResponseEntity<Double> doubleMapping(@RequestParam final Double param) {
-        log.debug("parameter : "+param);
+        log(param.toString());
         return ResponseEntity.ok(param);
     }
 
@@ -82,7 +82,7 @@ public class RequestParam02APIController {
      */
     @PostMapping("/long")
     public ResponseEntity<Long> longMapping(@RequestParam final Long param) {
-        log.debug("parameter : "+param);
+        log(param.toString());
         return ResponseEntity.ok(param);
     }
 
@@ -93,13 +93,13 @@ public class RequestParam02APIController {
      */
     @PostMapping("/trim")
     public ResponseEntity<String> trimMapping(@RequestParam final String param) {
-        log.debug("parameter : "+param);
+        log(param);
         return ResponseEntity.ok(param);
     }
 
     @PostMapping("/params")
     public ResponseEntity<RequestParams02> requestParamObject(final RequestParams02 params) {
-        log.debug("requestParamDate call : "+params.toString());
+        log(params.toString());
         return ResponseEntity.ok(params);
     }
     
@@ -110,8 +110,11 @@ public class RequestParam02APIController {
      */
     @PostMapping("/body")
     public ResponseEntity<RequestParams02> requestParamBody(@RequestBody final RequestParams02 params) {
-        log.debug("requestParamBody call : "+params.toString());
-        return ResponseEntity.ok(params);
+        return requestParamObject(params);
+    }
+    
+    private void log(String message) {
+        log.debug("parameters : "+message);
     }
 
     @Getter

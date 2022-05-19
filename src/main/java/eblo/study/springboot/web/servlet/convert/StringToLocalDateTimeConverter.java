@@ -1,6 +1,6 @@
 package eblo.study.springboot.web.servlet.convert;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
@@ -8,12 +8,13 @@ import org.springframework.stereotype.Component;
 import eblo.study.springboot.web.servlet.support.DateUtil;
 
 @Component
-public class StringToDateConverter implements Converter<String, Date> {
+public class StringToLocalDateTimeConverter implements Converter<String, LocalDateTime> {
     
     @Override
-    public Date convert(String source) {
+    public LocalDateTime convert(String source) {
+        
         try {
-            return DateUtil.getDateFormat().parse(source);
+            return LocalDateTime.parse(source, DateUtil.getDateTimeFormatter());
         } catch (Exception e) {
             e.printStackTrace();
             return null;

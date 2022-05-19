@@ -4,7 +4,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Getter
 @ToString
 @Builder
@@ -49,7 +51,7 @@ public class User {
     
     public static void main(String[] args) {
         User user = User.builder().id("id").name("테스트").age(22).build();
-        System.out.println(user.toString());
+        log.debug(user.toString());
     }
 
 }

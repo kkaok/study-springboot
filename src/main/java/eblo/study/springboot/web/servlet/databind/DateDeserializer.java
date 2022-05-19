@@ -8,18 +8,18 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 
-import eblo.study.springboot.web.servlet.constant.DateFormatConstant;
+import eblo.study.springboot.web.servlet.support.DateUtil;
 
 public class DateDeserializer extends JsonDeserializer<Date> {
 
     @Override
     public Date deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
-
         String date = jsonParser.getText();
         try {
-            return DateFormatConstant.DATE_FORMAT.parse(date);
+            return DateUtil.getDateFormat().parse(date);
         } catch (ParseException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            return null;
         }
     }
 }

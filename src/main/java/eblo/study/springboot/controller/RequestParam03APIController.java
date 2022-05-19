@@ -1,7 +1,5 @@
 package eblo.study.springboot.controller;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.springframework.http.ResponseEntity;
@@ -10,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import lombok.Builder;
+import eblo.study.springboot.web.servlet.support.DateUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -27,10 +25,7 @@ public class RequestParam03APIController {
      */
     @PostMapping("/date")
     public ResponseEntity<String> dateMapping(@RequestParam final Date param) {
-        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");  
-        String strDate = dateFormat.format(param);  
-        log.debug("strDate : "+strDate);
-        return ResponseEntity.ok(strDate);
+        return ResponseEntity.ok(DateUtil.formatDate(param, "yyyy/MM/dd"));
     }
 
     /**
@@ -40,7 +35,7 @@ public class RequestParam03APIController {
      */
     @PostMapping("/double")
     public ResponseEntity<Double> doubleMapping(@RequestParam final Double param) {
-        log.debug("parameter : "+param);
+        log(param.toString());
         return ResponseEntity.ok(param);
     }
 
@@ -51,7 +46,7 @@ public class RequestParam03APIController {
      */
     @PostMapping("/long")
     public ResponseEntity<Long> longMapping(@RequestParam final Long param) {
-        log.debug("parameter : "+param);
+        log(param.toString());
         return ResponseEntity.ok(param);
     }
 
@@ -62,20 +57,23 @@ public class RequestParam03APIController {
      */
     @PostMapping("/trim")
     public ResponseEntity<String> trimMapping(@RequestParam final String param) {
-        log.debug("parameter : "+param);
+        log(param);
         return ResponseEntity.ok(param);
     }
     
     @PostMapping("/params")
     public ResponseEntity<RequestParams03> requestParamObject(final RequestParams03 params) {
-        log.debug("requestParamDate call : "+params.toString());
+        log(params.toString());
         return ResponseEntity.ok(params);
+    }
+    
+    private void log(String message) {
+        log.debug("parameters : " + message);
     }
 
     @Getter
     @Setter
     @ToString
-    @Builder
     public static class RequestParams03 {
         private String id;
         private String name;
@@ -83,5 +81,15 @@ public class RequestParam03APIController {
         private Date created;
         private Double dbl;
         private Long lng;
+        public RequestParams03() {
+            super();
+        }
+        public RequestParams03(String id, String name, Date created) {
+            super();
+            this.id = id;
+            this.name = name;
+            this.created = created;
+        }
+        
     }
 }

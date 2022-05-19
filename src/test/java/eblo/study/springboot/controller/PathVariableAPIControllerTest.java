@@ -1,16 +1,18 @@
 package eblo.study.springboot.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 @WebMvcTest(PathVariableAPIController.class)
@@ -18,94 +20,44 @@ class PathVariableAPIControllerTest {
 
     @Autowired 
     private MockMvc mockMvc;
-    
-    /**
-     * 단순 매핑 테스트 
-     * @throws Exception
-     */
-    @Test
-    void simpleMapping() throws Exception {
-        String id = "test";
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/controller/path/"+id)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andReturn();
-        String content = result.getResponse().getContentAsString();
-        Assertions.assertEquals(content, id);
-    }
+
+    private static final String ROOT_URI = "/controller/path";
 
     /**
-     * id를 필수가 아닌걸로 설정하고 id 없이 보내는 테스트. 
+     * 매핑 테스트 
      * @throws Exception
      */
-    @Test
-    void requiredfalse() throws Exception {
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/controller/path/requiredfalse")
-                .contentType(MediaType.APPLICATION_JSON))
+    @ParameterizedTest
+    @CsvSource({
+        ROOT_URI+"/test,test"
+        , ROOT_URI+"/requiredfalse/test,test"
+        , ROOT_URI+"/requiredfalse,"
+        , ROOT_URI+"/optional/test,test"
+        , ROOT_URI+"/optional,none"
+        })
+    void simpleMapping(String uri, String expected) throws Exception {
+        MockHttpServletRequestBuilder mrbuilder = MockMvcRequestBuilders.get(uri).contentType(MediaType.APPLICATION_JSON);
+        if(expected == null) expected = "";
+        MvcResult result = mockMvc.perform(mrbuilder)
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
         String content = result.getResponse().getContentAsString();
-        Assertions.assertEquals(content, "");
-    }
-
-    /**
-     * id를 필수가 아닌걸로 설정하고 id에 값을 넣고 요청.  
-     * @throws Exception
-     */
-    @Test
-    void requiredfalseId() throws Exception {
-        String id = "test";
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/controller/path/requiredfalse/"+id)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andReturn();
-        String content = result.getResponse().getContentAsString();
-        Assertions.assertEquals(content, id);
-    }
-
-    /**
-     * path optional 설정 테스트 
-     * @throws Exception
-     */
-    @Test
-    void optionalId() throws Exception {
-        String id = "test";
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/controller/path/optional/"+id)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andReturn();
-        String content = result.getResponse().getContentAsString();
-        Assertions.assertEquals(content, id);
-    }
-
-    /**
-     * path optional 설정하고 값이 없는 경우 "none"을 반환  
-     * @throws Exception
-     */
-    @Test
-    void optionalIdNone() throws Exception {
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/controller/path/optional")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andReturn();
-        String content = result.getResponse().getContentAsString();
-        Assertions.assertEquals(content, "none");
+        assertThat(content).isEqualTo(expected);
     }
 
     /**
      * multiple path 테스트   
      * @throws Exception
      */
-    @Test
-    void multiplePaths() throws Exception {
-        String id = "test";
-        String name = "eblo";
-        mockMvc.perform(MockMvcRequestBuilders.get("/controller/path/"+id+"/"+name)
+    @ParameterizedTest
+    @CsvSource({
+        ROOT_URI+"/test/eblo,test,eblo"
+        , ROOT_URI+"/map/test/eblo,test,eblo"
+        , ROOT_URI+"/object/test/eblo,test,eblo"
+        })
+    void multiplePaths(String uri, String id, String name) throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get(uri)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -113,36 +65,4 @@ class PathVariableAPIControllerTest {
                 .andExpect(jsonPath("$.id").value(id));
     }
 
-    /**
-     * path 정보를 Map으로 받는 테스트 
-     * @throws Exception
-     */
-    @Test
-    void multipleMapPaths() throws Exception {
-        String id = "test";
-        String name = "eblo";
-        mockMvc.perform(MockMvcRequestBuilders.get("/controller/path/map/"+id+"/"+name)
-                .contentType(MediaType.APPLICATION_JSON))
-        .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.name").value(name))
-        .andExpect(jsonPath("$.id").value(id));
-    }
-    
-    /**
-     * path 정보를 객체로로 받는 테스트 
-     * @throws Exception
-     */
-    @Test
-    void multipleObjectPaths() throws Exception {
-        String id = "test";
-        String name = "eblo";
-        mockMvc.perform(MockMvcRequestBuilders.get("/controller/path/object/"+id+"/"+name)
-                .contentType(MediaType.APPLICATION_JSON))
-        .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.name").value(name))
-        .andExpect(jsonPath("$.id").value(id));
-    }
-    
 }

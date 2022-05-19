@@ -24,7 +24,7 @@ public class ResponseAPIController {
      */
     @PostMapping("/contentTypeNone")
     public ResponseEntity<String> contentTypeNoneString(@RequestBody final String body) {
-        log.debug("requestParamRequiredFalse call : "+body);
+        log.debug("contentTypeNoneString call : "+body);
         return ResponseEntity.ok(body);
     }
 
@@ -35,7 +35,7 @@ public class ResponseAPIController {
      */
     @PostMapping(path="/contentTypeNoneObject")
     public ResponseEntity<ResponseTest> contentTypeNone(@RequestBody final ResponseTest body) {
-        log.debug("requestParamRequiredFalse call : "+body);
+        log.debug("contentTypeNone call : "+body);
         return ResponseEntity.ok(body);
     }
 
@@ -46,7 +46,7 @@ public class ResponseAPIController {
      */
     @PostMapping(path="/producesXml",  produces="application/xml; charset=UTF8")
     public ResponseEntity<ResponseTest> producesXml(@RequestBody final ResponseTest body) {
-        log.debug("requestParamRequiredFalse call : "+body);
+        log.debug("producesXml call : "+body);
         return ResponseEntity.ok(body);
     }
 
@@ -57,7 +57,7 @@ public class ResponseAPIController {
      */
     @PostMapping(path="/producesJson",  produces="application/json; charset=UTF8")
     public ResponseEntity<ResponseTest> producesJson(@RequestBody final ResponseTest body) {
-        log.debug("requestParamRequiredFalse call : "+body);
+        log.debug("producesJson call : "+body);
         return ResponseEntity.ok(body);
     }
 

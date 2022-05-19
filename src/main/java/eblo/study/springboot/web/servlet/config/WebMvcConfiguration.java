@@ -67,16 +67,8 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
         NumberStyleFormatter numberFormatter = new NumberStyleFormatter();
         numberFormatter.setPattern("#,###,###,###.##");
         registry.addFormatter(numberFormatter);
-        
     }
 
-//    @Override
-//    public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
-//        configurer.favorParameter(false)
-//        .ignoreAcceptHeader(true)
-//        .defaultContentType(MediaType.APPLICATION_JSON);
-//    }
-    
     @Bean
     public ObjectMapper objectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -92,7 +84,6 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
         //objectMapper.enable(SerializationFeature.WRAP_ROOT_VALUE); // root를 사용할 때 
         //objectMapper.enable(DeserializationFeature.UNWRAP_ROOT_VALUE); // root로 값을 넘길 때 사용. 
 
-        //serializer, deserializer설정 
         SimpleModule simpleModule = new SimpleModule();
         simpleModule.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer());
         simpleModule.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer());

@@ -1,14 +1,13 @@
 package eblo.study.springboot.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
@@ -19,6 +18,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import eblo.study.springboot.controller.RequestParam02APIController.RequestParams02;
+import eblo.study.springboot.web.servlet.support.DateUtil;
 
 @WebMvcTest(controllers = RequestParam02APIController.class)
 class RequestParam02APIControllerTest {
@@ -26,58 +26,25 @@ class RequestParam02APIControllerTest {
     @Autowired 
     private MockMvc mockMvc;
  
-    @Test
-    void dateMapping() throws Exception {
-        String param = "2022-05-12";
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/controller/request/initbinder/date")
-                .param("param", param)
-                .contentType(MediaType.APPLICATION_JSON))
-//                .andDo(print())
-                .andExpect(status().isOk())
-                .andReturn();
-        String content = result.getResponse().getContentAsString();
-        Assertions.assertEquals(content, "2022/05/12");
+    private RequestParams02 getRequestParams02() {
+        return new RequestParams02("test", "테스트", true, DateUtil.parseDate("2022-05-12"));
     }
 
-    @Test
-    void doubleMapping() throws Exception {
-        String param = "12,000.12";
-        Double resultValue = 12000.12d;
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/controller/request/initbinder/double")
+    @ParameterizedTest
+    @CsvSource(value = {
+        "/controller/request/initbinder/date#2022-05-12#2022/05/12"
+        ,"/controller/request/initbinder/double#12,000.12#12000.12"
+        ,"/controller/request/initbinder/long#12,000.12#12000"
+        ,"/controller/request/initbinder/trim# 12,000.12 #12,000.12"
+        }, delimiterString="#")
+    void dateMapping(String uri, String param, String expected) throws Exception {
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post(uri)
                 .param("param", param)
                 .contentType(MediaType.APPLICATION_JSON))
 //                .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
-        String content = result.getResponse().getContentAsString();
-        Assertions.assertEquals(Double.valueOf(content), resultValue);
-    }
-
-    @Test
-    void longMapping() throws Exception {
-        String param = "12,000.12";
-        Long resultValue = 12000l;
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/controller/request/initbinder/long")
-                .param("param", param)
-                .contentType(MediaType.APPLICATION_JSON))
-//                .andDo(print())
-                .andExpect(status().isOk())
-                .andReturn();
-        String content = result.getResponse().getContentAsString();
-        Assertions.assertEquals(Long.valueOf(content), resultValue);
-    }
-    
-    @Test
-    void trimMapping() throws Exception {
-        String param = " 12,000.12 ";
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/controller/request/initbinder/trim")
-                .param("param", param)
-                .contentType(MediaType.APPLICATION_JSON))
-//                .andDo(print())
-                .andExpect(status().isOk())
-                .andReturn();
-        String content = result.getResponse().getContentAsString();
-        Assertions.assertEquals(content, param.trim());
+        assertThat(result.getResponse().getContentAsString()).isEqualTo(expected);
     }
 
     /**
@@ -86,14 +53,12 @@ class RequestParam02APIControllerTest {
      */
     @Test
     void objectMapping() throws Exception {
-        String created = "2022-05-12";
-        Date createdDt = new SimpleDateFormat("yyyy-MM-dd").parse(created); 
-        RequestParams02 params = RequestParams02.builder().id("test").name(" 테스트 ").created(createdDt).build();
+        RequestParams02 params = getRequestParams02();
         mockMvc.perform(MockMvcRequestBuilders.post("/controller/request/initbinder/params")
                 .param("id", params.getId())
                 .param("name", params.getName())
-                .param("test", "yes")
-                .param("created", created)
+                .param("created", DateUtil.formatDate(params.getCreated()))
+                .param("test", (params.getTest())? "yes":"no")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -107,13 +72,9 @@ class RequestParam02APIControllerTest {
      */
     @Test
     void bodyMapping() throws Exception {
-        String created = "2022-05-12";
-        Date createdDt = new SimpleDateFormat("yyyy-MM-dd").parse(created); 
-        RequestParams02 params = RequestParams02.builder().id("test").name("테스트").test(true).created(createdDt).build();
-        
+        RequestParams02 params = getRequestParams02();
         ObjectMapper objectMapper = new ObjectMapper();
         String body = objectMapper.writeValueAsString(params);
-        
         mockMvc.perform(MockMvcRequestBuilders.post("/controller/request/initbinder/body")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(body))

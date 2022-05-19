@@ -26,7 +26,7 @@ public class PathVariableAPIController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<String> simple(@PathVariable String id) {
-        log.debug("simple call : "+id);
+        log(id);
         return ResponseEntity.ok(id);
     }
 
@@ -37,8 +37,7 @@ public class PathVariableAPIController {
      */
     @GetMapping(value = { "/requiredfalse", "/requiredfalse/{id}"})
     public ResponseEntity<String> requiredfalse(@PathVariable(required = false) String id) {
-        log.debug("requiredfalse call : "+id);
-        return ResponseEntity.ok(id);
+        return simple(id);
     }
     
     /**
@@ -48,8 +47,9 @@ public class PathVariableAPIController {
      */
     @GetMapping(value = { "/optional", "/optional/{id}"})
     public ResponseEntity<String> requiredfalseOptional(@PathVariable(required = false) Optional<String> id) {
-        log.debug("optional call : "+id);
-        return ResponseEntity.ok(id.orElse("none"));
+        String path = id.orElse("none");
+        log(path);
+        return ResponseEntity.ok(path);
     }
     
     /**
@@ -63,7 +63,7 @@ public class PathVariableAPIController {
         Map<String, String> paths = new HashMap<>();
         paths.put("id", id);
         paths.put("name", name);
-        log.debug("paths : "+paths.toString());
+        log(paths.toString());
         return ResponseEntity.ok(paths);
     }
 
@@ -74,7 +74,7 @@ public class PathVariableAPIController {
      */
     @GetMapping("/map/{id}/{name}")
     public ResponseEntity<Map<String, String>> multipleMapPaths(@PathVariable Map<String, String> paths) {
-        log.debug("paths : "+paths.toString());
+        log(paths.toString());
         return ResponseEntity.ok(paths);
     }
     
@@ -85,10 +85,13 @@ public class PathVariableAPIController {
      */
     @GetMapping("/object/{id}/{name}")
     public ResponseEntity<MappingParams> multipleObjectPaths(MappingParams paths) {
-        log.debug("paths : "+paths.toString());
+        log(paths.toString());
         return ResponseEntity.ok(paths);
     }
     
+    private void log(String message) {
+        log.debug("path :" + message);
+    }
     @Getter
     @Setter
     @ToString

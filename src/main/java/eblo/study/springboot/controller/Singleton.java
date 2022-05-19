@@ -2,7 +2,7 @@ package eblo.study.springboot.controller;
 
 public class Singleton {
 
-    private final static Singleton instance = new Singleton();
+    private static final Singleton instance = new Singleton();
     
     private Singleton() {
         super();
@@ -12,7 +12,4 @@ public class Singleton {
         return instance;
     }
     
-    public String test() {
-        return "test";
-    }
 }
