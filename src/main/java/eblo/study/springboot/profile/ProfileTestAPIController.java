@@ -4,6 +4,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @RestController
 public class ProfileTestAPIController {
 
@@ -12,6 +15,9 @@ public class ProfileTestAPIController {
     
     @GetMapping("/profile")
     public String test() {
+        log.debug("debug : "+appTitle);
+        log.info("info : "+appTitle);
+        log.error("error : "+appTitle);
         return appTitle;
     }
     
