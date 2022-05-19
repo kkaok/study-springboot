@@ -45,13 +45,13 @@ public class ResponseJsonAPIController {
     public static class JsonTest {
 
         /**
-         * json으로 역직렬화할 때 testId라는 필드명으로 한다. 
+         * testId라는 필드명 사용. 
          */
         @JsonProperty(value="testId")
         private String id;
 
         /**
-         * 값을 받지만 역직렬화는 하지 않는다. 
+         * 값을 받지만 serialize는 하지 않는다. 
          */
         @JsonProperty(access=JsonProperty.Access.WRITE_ONLY)
         private String name;
@@ -65,7 +65,7 @@ public class ResponseJsonAPIController {
         private String emptyField;
 
         /**
-         * yyyy-MM-dd 포맷으로 전달 된 값을 직렬화한다. 
+         * yyyy-MM-dd 포맷으로 매핑. 
          */
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone="Asia/Seoul")
         private Date created;
