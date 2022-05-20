@@ -34,19 +34,8 @@
         </encoder>
     </appender>
 
-    <!-- 테스트를 위한 설정 -->
-    <appender name="ERROR_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-        <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>ERROR</level>
-            <onMatch>ACCEPT</onMatch>
-            <onMismatch>DENY</onMismatch>
-        </filter>
-        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern>${LOG_PATTERN_DEFAULT_ERROR}</pattern>
-        </encoder>
-    </appender>
     <!-- file appender -->
-    <appender name="INFO_DEFAULT_FILE_APPENDER"
+    <appender name="DEFAULT_FILE_APPENDER"
               class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_PATH}/${LOG_FILE_NAME}.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -81,7 +70,7 @@
             <logger name="${LOG_PACKAGE_NAME}" additivity="false">
                 <level value="INFO"/>
                 <appender-ref ref="ERROR_DEFAULT_FILE_APPENDER"/>
-                <appender-ref ref="INFO_DEFAULT_FILE_APPENDER"/>
+                <appender-ref ref="DEFAULT_FILE_APPENDER"/>
             </logger>
             <logger name="org.springframework" additivity="false">
                 <level value="INFO"/>
@@ -89,30 +78,13 @@
             </logger>
             <root level="INFO">
                 <appender-ref ref="ERROR_DEFAULT_FILE_APPENDER"/>
-                <appender-ref ref="INFO_DEFAULT_FILE_APPENDER"/>
+                <appender-ref ref="DEFAULT_FILE_APPENDER"/>
             </root>
         </then>
         <else>
-		    <if condition='property("log.config.mode").equals("dev")'>
-                <!-- 개발 -->
-		        <then>
-		            <logger name="${LOG_PACKAGE_NAME}" additivity="false">
-		                <level value="INFO"/>
-		                <appender-ref ref="CONSOLE"/>
-		                <appender-ref ref="INFO_DEFAULT_FILE_APPENDER"/>
-		            </logger>
-		            <logger name="org.springframework" additivity="false">
-		                <level value="INFO"/>
-		                <appender-ref ref="CONSOLE"/>
-		                <appender-ref ref="INFO_DEFAULT_FILE_APPENDER"/>
-		            </logger>
-		            <root level="INFO">
-		                <appender-ref ref="CONSOLE"/>
-                        <appender-ref ref="INFO_DEFAULT_FILE_APPENDER"/>
-		            </root>
-		        </then>
+		    <if condition='property("log.config.mode").equals("local")'>
                 <!-- 로컬 local -->
-                <else>
+		        <then>
                     <logger name="${LOG_PACKAGE_NAME}" additivity="false">
                         <level value="DEBUG"/>
                         <appender-ref ref="CONSOLE"/>
@@ -123,6 +95,23 @@
                     </logger>
                     <root level="DEBUG">
                         <appender-ref ref="CONSOLE"/>
+                    </root>
+		        </then>
+                <!-- 개발 -->
+                <else>
+                    <logger name="${LOG_PACKAGE_NAME}" additivity="false">
+                        <level value="INFO"/>
+                        <appender-ref ref="CONSOLE"/>
+                        <appender-ref ref="DEFAULT_FILE_APPENDER"/>
+                    </logger>
+                    <logger name="org.springframework" additivity="false">
+                        <level value="INFO"/>
+                        <appender-ref ref="CONSOLE"/>
+                        <appender-ref ref="DEFAULT_FILE_APPENDER"/>
+                    </logger>
+                    <root level="INFO">
+                        <appender-ref ref="CONSOLE"/>
+                        <appender-ref ref="DEFAULT_FILE_APPENDER"/>
                     </root>
                 </else>
             </if>

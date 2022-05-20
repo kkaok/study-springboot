@@ -15,6 +15,7 @@ public class ProfileTestAPIController {
     
     @GetMapping("/profile")
     public String test() {
+        log.trace("trace : "+appTitle);
         log.debug("debug : "+appTitle);
         log.info("info : "+appTitle);
         log.error("error : "+appTitle);

@@ -1,6 +1,7 @@
 package eblo.study.springboot.web.servlet.config;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -8,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.number.NumberStyleFormatter;
+import org.springframework.http.CacheControl;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -23,11 +25,24 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/css/**").addResourceLocations(CLASSPATH_RESOURCE_LOCATIONS+"/css/").setCachePeriod(3600);
-        registry.addResourceHandler("/images/**").addResourceLocations(CLASSPATH_RESOURCE_LOCATIONS+"/images/").setCachePeriod(3600);
-        registry.addResourceHandler("/js/**").addResourceLocations(CLASSPATH_RESOURCE_LOCATIONS+"/js/").setCachePeriod(3600);
-        registry.addResourceHandler("/html/**").addResourceLocations(CLASSPATH_RESOURCE_LOCATIONS+"/html/").setCachePeriod(3600);
-        registry.addResourceHandler("/favicon.ico"  ).addResourceLocations(CLASSPATH_RESOURCE_LOCATIONS+"favicon.ico"   ).setCachePeriod(3600);
+        CacheControl cacheControl = CacheControl 
+                .maxAge(3600*24*7, TimeUnit.SECONDS) 
+                .mustRevalidate();
+        registry.addResourceHandler("/css/**")
+                .addResourceLocations(CLASSPATH_RESOURCE_LOCATIONS+"/css/")
+                .setCacheControl(cacheControl);
+        registry.addResourceHandler("/images/**")
+                .addResourceLocations(CLASSPATH_RESOURCE_LOCATIONS+"/images/")
+                .setCacheControl(cacheControl);
+        registry.addResourceHandler("/js/**")
+                .addResourceLocations(CLASSPATH_RESOURCE_LOCATIONS+"/js/")
+                .setCacheControl(cacheControl);
+        registry.addResourceHandler("/html/**")
+                .addResourceLocations(CLASSPATH_RESOURCE_LOCATIONS+"/html/")
+                .setCacheControl(cacheControl);
+        registry.addResourceHandler("/favicon.ico")
+                .addResourceLocations(CLASSPATH_RESOURCE_LOCATIONS+"favicon.ico")
+                .setCacheControl(cacheControl);
     }
     
     @Override
